@@ -22,16 +22,31 @@ def principal_components(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Outputs the principal components of the data, along with the variance associated with each.
 
     Args:
-        data (np.ndarray): Centered dataset with rows as entries and columns as variables
+        data (np.ndarray): Dataset with rows as entries and columns as variables
 
     Returns:
         tuple[np.ndarray, np.ndarray]: Principal components directions and associated variance.
     """
+    # Center the data
+    data = center(data)
+
     # Find the covariance matrix
-    cov = np.matmul(data.transpose(), data)
+    cov = np.matmul(data.transpose(), data) / (data.shape[0] - 1)
 
     # Find the eigens
     evals, evects = np.linalg.eig(cov)
-    evals = np.flip(np.sort(evals))
+    idx = np.argsort(evals, axis=0)[::-1]
+    sorted_eig_vectors = evects[:, idx]
 
     return evals, evects
+
+# Testing -------------------------------------------
+data = np.zeros((20,5))
+data[:,0] = np.random.uniform(0, 10, 20)
+data[:,1] = np.random.uniform(0,10, 20)
+data[:,2] = data[:,0] + data[:,1] + np.random.normal(0, 1.15, 20)
+data[:,3] = 9 * data[:,0] + 1 * data[:,1] + np.random.normal(0, 1.15, 20)
+data[:,4] = 1 * data[:,0] + 9 * data[:,1] + np.random.normal(0, 1.15, 20) 
+
+print(principal_components(data)[0])
+print(principal_components(data)[1])
