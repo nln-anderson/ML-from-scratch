@@ -1,6 +1,7 @@
 # Principal Component Tools
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def center(data: np.ndarray) -> np.ndarray:
     """ Centers the data for each column in an array
@@ -40,6 +41,31 @@ def principal_components(data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
     return evals, evects
 
+def pca_graph(data: np.ndarray) -> None:
+    """Displays the explained variance of each eigenvalue from PCA
+
+    Args:
+        data (np.ndarray): Dataset
+    """
+    var, direction = principal_components(data)
+
+    # X-var of graph
+    x = []
+    for num in range(1, len(var)+1):
+        x.append(num)
+    
+    # Y-var of graph
+    cumulative_var = np.cumsum(var)
+    total_var = np.sum(var)
+    explained_variance_ratio = cumulative_var / total_var
+
+    # Graphing
+    plt.plot(x, explained_variance_ratio)
+    plt.xlabel("Number of Components")
+    plt.ylabel("Amount of Variance Explained")
+    plt.show()
+
+
 # Testing -------------------------------------------
 data = np.zeros((20,5))
 data[:,0] = np.random.uniform(0, 10, 20)
@@ -50,3 +76,5 @@ data[:,4] = 1 * data[:,0] + 9 * data[:,1] + np.random.normal(0, 1.15, 20)
 
 print(principal_components(data)[0])
 print(principal_components(data)[1])
+
+pca_graph(data)
